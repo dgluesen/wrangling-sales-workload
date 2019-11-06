@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>Wrangling and cleansing business data</title>
+
+	<!-- Google font -->
+	<link href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CMuli:400,700" rel="stylesheet">
+	<!-- Bootstrap -->
+	<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css" />
+	<!-- Font Awesome Icon -->
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<!-- Custom stlylesheet -->
+	<link type="text/css" rel="stylesheet" href="css/style.css" />
+
+	<style>
+	@import url('https://fonts.googleapis.com/css?family=Assistant:200&display=swap');
+	</style>
+
+</head>
+
+<body>
+	<!-- HEADER -->
+	<header id="header">
+		<!-- NAV -->
+		<div id="nav">
+			<div id="nav-top">
+				<div class="container">
+					<!-- social -->
+					<ul class="nav-social">
+						<li><a href="https://linkedin.com/in/dennisgluesenkamp" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://twitter.com/dgluesen" target="_blank"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="https://instagram.com/dgluesen" target="_blank"><i class="fa fa-instagram"></i></a></li>
+						<li><a href="https://github.com/dgluesen" target="_blank"><i class="fa fa-github"></i></a></li>
+					</ul>
+					<!-- /social -->
+				</div>
+			</div>
+		</div>
+		<!-- /NAV -->
+
+		<!-- PAGE HEADER -->
+		<div id="post-header" class="page-header">
+			<div class="page-header-bg" style="background-image: url('./img/title.jpg');" data-stellar-background-ratio="0.5"></div>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-10">
+						<div class="post-category">
+							<a>#datascience&emsp; #datacleansing&emsp; #hranalytics&emsp; #salesdata</a>
+						</div>
+						<h1>Wrangling and cleansing business data</h1>
+						<ul class="post-meta">
+							<li><a href="http://dgluesen.github.io">Dennis Gluesenkamp</a></li>
+							<li>October 2019</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- /PAGE HEADER -->
+	</header>
+	<!-- /HEADER -->
+
+	<!-- section -->
+	<div class="section">
+		<!-- container -->
+		<div class="container">
+			<!-- row -->
+			<div class="row">
+				<div class="col-md-8">
+					<!-- post content -->
+					<div class="section-row">
+						<h3 style="margin-top:1.0cm;" id="introduction">Introduction</h3>
+						<p>Raw data of real analytical use cases in a number of industries and companies are frequently provided in an Excel-based form. These files usually cannot be processed directly in machine learning models, but must first be cleaned and preprocessed. In this process, many different types of pitfalls may occur. This makes data preprocessing an essential time factor in the daily work of a data scientist [<a href="#press2016">1</a>].</p>
+						<p>In this concise project an Excel spreadsheet will be presented which in this form is closely oriented to a real case, but contains only simulated figures for reasons of data and business results protection. However, the form and structure of the file corresponds to a real case and could be encountered by a data scientist in a company in this way.</p>
+						<p>This project is done in Python with a Jupyter Notebook. First the data is read in then cleaned and pre-processed. Finally, the various features are examined and a simple regression model is applied to describe the underlying relationship between working hours and goods sold. This article discusses the most important aspects and results. For a detailed look at the code, please refer to the Jupyter Notebook referenced on the right and the corresponding GitHub repository.</p>
+
+						<h3 style="margin-top:1.0cm;" id="dataset">Data set, import and pre-processing</h3>
+						<p>First of all, the present Excel file is studied in more detail. It contains two sheets, one containing sales data in various Group stores and the other providing information on opening hours and therefore maximum working hours at the locations. A first important note for practical application relates to cooperation with colleagues in the departments that have compiled this data:</p>
+						<blockquote class="highlightblock">
+							<p>Before starting the data processing, as much information as possible about a data set should be obtained from the colleagues in the relevant departments. This can contribute significantly to faster and cleaner pre-processing.</p>
+						</blockquote>
+						<p>In our example the existence of the values '#NV' and 'Err:520' in the table - which is shown in its Excel-view in Figure 1 - can be determined in this way. They can be transformed directly into Pythons/Pandas 'NaN' on import. </p>
+						<figure>
+							<img src="./img/excel.jpg" width="90%">
+							<figcaption style="margin-top:0.2cm;">Fig. 1: Screenshot of the provided Excel sheet</figcaption>
+						</figure>
+						<p>Next, the data types are checked after they have been read and adjusted if necessary. The same applies to implausible and missing values in the data set, which are replaced appropriately. More details on this can be found in the <i>Data allocation and preparation</i> section of the notebook. It is noticeable that there are structuring elements for visual reasons in the Excel table and that a single month contains no information at all. This touches another important point in the handling of Excel raw data:</p>
+						<blockquote class="highlightblock">
+							<p>Excel is a working tool for many departments, which means that the job is done directly in the document. This leads to formatting and input being carried out in such a way that the Excel user gets along with the information displayed as quickly as possible and that it is visually appealing. However, this contradicts the automatic retrieval, which must be respected when working outside Excel.</p>
+						</blockquote>
+						<p>In the further pre-processing, the monthly figures are cumulated so that seasonal fluctuations can be excluded. In addition, column names are changed and the working time is regarded as a relation to the opening hours. This reflects better the effort made in a market/department.</p>
+
+						<h3 style="margin-top:1.0cm;" id="excluding">Exclude departments based on feature distributions</h3>
+						<p>By examining the distributions respectively histograms across department of the different features originally present in the data set, a limitation to essential departments can be made. Some examples to the backgrounds:</p>
+						<ul class="list-style">
+							<figure class="pull-right">
+								<img src="./img/histo_other.png" width="95%">
+								<figcaption style="margin-top:0.2cm;">Fig. 2: Frequency distribution of <br>feature 'HoursRatio' in department 3 (<i>other</i>)</figcaption>
+							</figure>
+							<li><p>Department 3, which is <i>other</i>, shows a very narrow distribution (see Fig. 2). The value range here is only between 0.128 and 0.143, while the fluctuation in the other departments is not only in the decimal range. After a view into the data set it becomes clear why: The recorded hours are all over the same. Only the cumulative hours as divisor provide the small variance in the feature 'HoursRatio'. This case must be passed back to the business, since it is highly doubtful that the values for department 3 are correct. Therefore, it cannot be considered in the further analysis also.</p></li>
+							<figure>
+								<img src="./img/histo_admin.png" width="95%">
+								<figcaption style="margin-top:0.2cm;">Fig. 3: Density of goods sold in the departments <br>15 <i>(Admin)</i>, 16 <i>(Customer Service)</i> and 17 <i>(others)</i></figcaption>
+							</figure>
+							<figure class="pull-right">
+								<img src="./img/histo_delivery.png" width="95%">
+								<figcaption style="margin-top:0.2cm;">Fig. 4: Frequency distribution of <br>sales area in department 11 <i>(Delivery)</i></figcaption>
+							</figure>
+							<li><p>Departments 15 <i>(Admin)</i>, 16 <i>(Customer Service)</i> and 17 <i>(others)</i> are not part of the original sales areas. For this reason, their distribution in goods sold - which is quite the same (see Fig. 3) - is not very meaningful. They are therefore removed from the data set.</p></li>
+							<li><p>Department 11 is <i>Delivery</i>. This makes it comprehensible that no sales area is required here and that the distribution is therefore centered on 0 (see Fig. 4). The department is also removed from the data set.</p></li>
+						</ul>
+						<p>These examples illustrate the importance of knowledge about the organization and infrastructure of a company.</p>
+						<blockquote class="highlightblock">
+							<p>For data analysis it is indispensable to obtain information about the general conditions in the company. This allows special characteristics to be taken into account and extraordinary effects to be eliminated. If the context of the business is not understood, this causes biases.</p>
+						</blockquote>
+						<p style="margin-top:1.0cm;">This leaves the following departments for further analysis: <i>Dry, Food, Non Food, Frozen, Fish, Fruits & Vegetables, Meat, Clothing, Household, Hardware</i></p>
+
+            <h3 style="margin-top:1.0cm;" id="correlations">Correlations between features</h3>
+						<p>The next step is to look at the mutual relationships between the numerical features grouped by department. This is done with a so called pair plot, shown in Figure 5. The distribution of each feature, color coded across the departments is shown on the diagonal. The scatter plots on the upper right hand side are showing the relationship between the named features. Each scatter point represents one department of a specific store. Finally, on the lower left hand side, a density estimate is drawn for the different departments across all stores.</p>
+						<figure>
+							<img src="./img/pairplot.png" width="95%">
+							<figcaption style="margin-top:0.2cm;">Fig. 5: Pair plot including feature distributions on the diagonal, scatter plots on the upper right side <br>and density estimates on the lower left side color coded by department</figcaption>
+						</figure>
+						<p>In this pairplot different findings can be seen:</p>
+						<ul class="list-style">
+							<li><p>Especially the distributions of sales units and turnover are dominated by a few departments with very small quantities.</p></li>
+							<li><p>The departments appear as (sometimes) overlapping but clearly defined clusters or areas in the relationships between the individual features.</p></li>
+							<li><p>The relationship between sales units and hours ratio (second column, first row) has department clusters that are somewhat ellipsoidal, i.e. linear. This suggests a further investigation using linear regression.</p></li>
+						</ul>
+						<figure class="pull-right">
+							<img src="./img/box_pcc.png" width="100%">
+							<figcaption style="margin-top:0.2cm;">Fig. 6: Correlation between sales units (Sales),<br> ratio of working hours (Hours) and sales area (Area)</figcaption>
+						</figure>
+						<p>We can also look at the correlation coefficients between the features. Due to the proximity to the sales units, turnover is not included here.  This results in three distributions of correlation coefficients, which are shown in Figure 6. The distribution results from the different departments. It can be seen that, on average, the linear relationship between sales units and working hours is the largest. This makes the further modeling of the relationship between sales units and working hours ratio interesting not only from the management's point of view. Rather, depending on the department, there seems to be a linear relationship between these variables within certain limits.</p>
+
+            <h3 style="margin-top:1.0cm;" id="regression">Linear regression of hours ratio vs. sales units</h3>
+						<p>We consider the dependence of the sales units on the invested working time. As we have seen before, this only makes sense if it is done per department. This leads us to a regression analysis of the goods sold depending on the hours worked in a specific department. We investigate this relation separated by departments and check whether we get a narrow dot cloud here, which would support a linear dependency. It can be seen that some of the departments such as <i>Frozen</i> or <i>Meat</i> have a clearly defined linear structure, as seen in Figure 7. Others are a bit more indifferent, such as <i>Dry</i> and <i>Household</i> (see Figure 8).</p>
+						<figure>
+							<img src="./img/scatter01.png" width="75%">
+							<figcaption style="margin-top:0.2cm; margin-bottom:1.0cm;">Fig. 7: Sales units vs. ratio of working hours for example departments with a narrow scatter</figcaption>
+						</figure>
+						<figure>
+							<img src="./img/scatter02.png" width="75%">
+							<figcaption style="margin-top:0.2cm;">Fig. 8: Sales units vs. ratio of working hours for example departments with a broader scatter</figcaption>
+						</figure>
+						<p>Finally, a linear model for the prediction of sales figures with known working hours will be trained. This is done in the awareness that the statistical significance is rather low due to the small amount of data available. The algorithm is implemented in Python using the <code>LinearRegression()</code> model of the scikit-learn library [<a href="#sklearn2011">2</a>]. A quarter of the data is used as test set. In this way, the linear models shown in Figures 9 for the Meat department and 10 for Frozen are obtained.</p>
+						<figure>
+							<img src="./img/prediction_Frozen.png" width="80%">
+							<figcaption style="margin-top:0.2cm; margin-bottom:1.0cm;">Fig. 9: Linear regression model for department <i>Meat</i>,<br> R²(train) = 0.69, R²(test) = 0.83,<br> f(w) = 0.428 * w + 4.703</figcaption>
+						</figure>
+						<figure>
+							<img src="./img/prediction_Meat.png" width="80%">
+							<figcaption style="margin-top:0.2cm;">Fig. 10: Linear regression model for department <i>Frozen</i>,<br> R²(train) = 0.67, R²(test) = 0.72,<br> f(w) = 0.131 * w + 0.163</figcaption>
+						</figure>
+
+						<h4 style="margin-top:2.0cm;" id="references">References</h4>
+						<p id="press2016">[1] Gil Press. "Cleaning Big Data: Most Time-Consuming, Least Enjoyable Data Science Task, Survey Says". (2016) <a href="https://www.forbes.com/sites/gilpress/2016/03/23/data-preparation-most-time-consuming-least-enjoyable-data-science-task-survey-says/#6ea73f616f63">https://www.forbes.com/sites/gilpress/2016/03/23/data-preparation-most-time-consuming-least-enjoyable-data-science-task-survey-says/#6ea73f616f63</a>. Accessed: 2019-07-15</p>
+						<p id="sklearn2011">[2] <a href="http://jmlr.csail.mit.edu/papers/v12/pedregosa11a.html">Scikit-learn: Machine Learning in Python</a>, Pedregosa et al., JMLR 12, pp. 2825-2830. (2011)</p>
+						<p>Photo at title by <a href="https://unsplash.com/@hansonluu">Hanson Lu</a> on <a href="https://unsplash.com/@headwayio">Unsplash</a></p>
+					</div>
+					<!-- /post content -->
+				</div>
+
+				<div class="col-md-4">
+
+					<!-- category widget -->
+					<div class="aside-widget" style="margin-top:1.0cm;">
+						<div class="section-title">
+							<h2 class="title">Table of content</h2>
+						</div>
+						<div class="category-widget" style="margin-bottom:1.5cm;">
+							<ul>
+								<li><a href="#introduction">Introduction</a></li>
+								<li><a href="#dataset">Data set, import and pre-processing</a></li>
+								<li><a href="#excluding">Exclude departments based on feature distributions</a></li>
+								<li><a href="#correlations">Correlations between features</a></li>
+								<li><a href="#regression">Linear regression of hours ratio vs. sales units</a></li>
+								<li><a href="#references">References</a></li>
+							</ul>
+						</div>
+					</div>
+					<!-- /category widget -->
+
+					<!-- social widget -->
+					<div class="aside-widget" style="margin-top:1.0cm;">
+						<div class="section-title">
+							<h2 class="title">Coding, visualizations and other</h2>
+						</div>
+						<div class="social-widget">
+							<ul>
+								<li>
+									<a href="#" class="social-jupyter" target="_blank">
+										<img src="img/jupyter.png" width="45" height="53"><br><br>
+										<span>Jupyter<br>Notebook</span>
+									</a>
+								</li>
+								<li>
+									<a href="https://github.com/dgluesen/wrangling-sales-workload" class="social-github" target="_blank">
+										<img src="img/github.png" width="53" height="53"><br><br>
+										<span>GitHub<br>Repository</span>
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!-- /social widget -->
+
+					<!-- post widget -->
+					<!-- <div class="aside-widget">
+						<div class="section-title">
+							<h2 class="title">Recommendations</h2>
+						</div> -->
+						<!-- post -->
+						<!-- <div class="post post-widget">
+							<a class="post-img" href="blog-post.html"><img src="./img/widget-3.jpg" alt=""></a>
+							<div class="post-body">
+								<div class="post-category">
+									<a href="category.html">Lifestyle</a>
+								</div>
+								<h3 class="post-title"><a href="blog-post.html">Ne bonorum praesent cum, labitur persequeris definitionem quo cu?</a></h3>
+							</div>
+						</div> -->
+						<!-- /post -->
+					<!-- </div> -->
+					<!-- /post widget -->
+
+					<!-- gallery widget -->
+					<!-- <div class="aside-widget">
+						<div class="section-title">
+							<h2 class="title">Gallery</h2>
+						</div>
+						<div class="galery-widget">
+							<ul>
+								<li><a href="#"><img src="./img/galery-1.jpg" alt=""></a></li>
+								<li><a href="#"><img src="./img/galery-2.jpg" alt=""></a></li>
+								<li><a href="#"><img src="./img/galery-3.jpg" alt=""></a></li>
+								<li><a href="#"><img src="./img/galery-4.jpg" alt=""></a></li>
+								<li><a href="#"><img src="./img/galery-5.jpg" alt=""></a></li>
+								<li><a href="#"><img src="./img/galery-6.jpg" alt=""></a></li>
+							</ul>
+						</div>
+					</div> -->
+					<!-- /galery widget -->
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</div>
+	<!-- /SECTION -->
+
+	<!-- FOOTER -->
+	<footer id="footer">
+		<!-- container -->
+		<div class="container">
+			<!-- row -->
+			<div class="footer row">
+				<div class="col-md-6 col-md-push-9">
+					<!-- social -->
+					<ul class="nav-social">
+						<li><a href="https://linkedin.com/in/dennisgluesenkamp" target="_blank"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="https://twitter.com/dgluesen" target="_blank"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="https://instagram.com/dgluesen" target="_blank"><i class="fa fa-instagram"></i></a></li>
+						<li><a href="https://github.com/dgluesen" target="_blank"><i class="fa fa-github"></i></a></li>
+					</ul>
+					<!-- /social -->
+				</div>
+				<div class="col-md-6 col-md-pull-6">
+					<div class="footer-copyright">
+						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+						Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+						<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+					</div>
+				</div>
+			</div>
+			<!-- /row -->
+		</div>
+		<!-- /container -->
+	</footer>
+	<!-- /FOOTER -->
+
+	<!-- jQuery Plugins -->
+	<script src="js/jquery.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.stellar.min.js"></script>
+	<script src="js/main.js"></script>
+
+</body>
+
+</html>
